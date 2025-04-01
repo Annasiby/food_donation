@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from app import app, db
-from models import User, FoodDonation
+from food_donation.backend1.models import User, FoodDonation
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Welcome, {{ current_user.username }}!</h1>
+<h2>Your Donations</h2>
+<ul>
+    {% for donation in donations %}
+    <li>{{ donation.food_item }} ({{ donation.quantity }})</li>
+    {% endfor %}
+</ul>
+{% endblock %}
