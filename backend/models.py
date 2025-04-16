@@ -33,11 +33,11 @@ class Request(db.Model):
 with app.app_context():
     db.create_all()
     print("Database tables created successfully!")"""
-from backend import db, login_manager  # Add login_manager import here
+from datetime import datetime
+from backend import db, login_manager
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 
-# Add this right after your imports, before the class definitions
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -51,8 +51,8 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     
-    donations = db.relationship('Donation', back_populates='donor')
-    requests = db.relationship('Request', back_populates='requester')
+    donations = db.relationship('Donation', backref='donor', lazy=True, cascade='all, delete-orphan')
+    requests = db.relationship('Request', backref='requester', lazy=True, cascade='all, delete-orphan')
 
 class Donation(db.Model):
     __tablename__ = 'donations'
@@ -61,11 +61,9 @@ class Donation(db.Model):
     food_item = db.Column(db.String(100), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     location = db.Column(db.String(200), nullable=False)
-    status = db.Column(db.String(20), server_default='Pending')
-    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
-    
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    donor = db.relationship('User', back_populates='donations')
+    status = db.Column(db.String(20), default='Available')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
 
 class Request(db.Model):
     __tablename__ = 'requests'
@@ -76,6 +74,4 @@ class Request(db.Model):
     location = db.Column(db.String(200), nullable=False)
     status = db.Column(db.String(20), server_default='Pending')
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
-    
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    requester = db.relationship('User', back_populates='requests')
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))

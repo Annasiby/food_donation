@@ -1,9 +1,13 @@
-from flask import Blueprint, render_template
-from flask_login import login_required
+{% extends "base.html" %}
 
-bp = Blueprint('main', __name__)
+{% block title %}Dashboard{% endblock %}
 
-@bp.route('/dashboard')
-@login_required
-def dashboard():
-    return render_template('dashboard.html')
+{% block content %}
+<h1>Your Donations</h1>
+<!-- Dashboard content -->
+<ul>
+    {% for donation in donations %}
+    <li>{{ donation.food_item }} ({{ donation.quantity }})</li>
+    {% endfor %}
+</ul>
+{% endblock %}

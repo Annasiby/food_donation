@@ -1,10 +1,32 @@
-<nav>
-    {% if current_user.is_authenticated %}
-        <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('donation.new') }}">New Donation</a>
-        <a href="{{ url_for('auth.logout') }}">Logout</a>
-    {% else %}
-        <a href="{{ url_for('auth.register') }}">Register</a>
-        <a href="{{ url_for('auth.login') }}">Login</a>
-    {% endif %}
-</nav>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="main-nav">
+        <!-- Navigation content here -->
+    </nav>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="main-footer">
+        <!-- Footer content here -->
+    </footer>
+</body>
+</html>

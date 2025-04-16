@@ -1,7 +1,10 @@
 {% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
 {% block content %}
-<h1>Welcome, {{ current_user.username }}!</h1>
-<h2>Your Donations</h2>
+<h1>Your Donations</h1>
+<!-- Dashboard content -->
 <ul>
     {% for donation in donations %}
     <li>{{ donation.food_item }} ({{ donation.quantity }})</li>

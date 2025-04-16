@@ -1,4 +1,4 @@
-.footer {
+/* .footer {
     text-align: center;
     padding: 15px;
     background: #b9bbbe;
@@ -6,4 +6,13 @@
     position: absolute;
     bottom: 0;
     width: 100%;
+} */
+.footer {
+    text-align: center;
+    padding: 15px;
+    background: #b9bbbe;
+    color: white;
+    /* Remove position: absolute and bottom: 0 */
+    width: 100%;
+    margin-top: auto; /* This helps with flexbox solution */
 }

@@ -1,0 +1,35 @@
+.donation-form-container {
+    padding: 2rem;
+    max-width: 500px;
+    margin: auto;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding-bottom: 5rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-weight: bold;
+  }
+  
+  input, textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .submit-button {
+    padding: 0.7rem 1.5rem;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  

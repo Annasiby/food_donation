@@ -27,7 +27,7 @@ const Navbar = () => {
             {/* ✅ Sidebar Menu */}
             <div className={`sidebar ${menuOpen ? "open" : ""}`}>
                 <FaTimes className="close-btn" onClick={() => setMenuOpen(false)} />
-                <Link to="/donate" onClick={() => setMenuOpen(false)}>Donate</Link>
+                <Link to="/donation" onClick={() => setMenuOpen(false)}>Donation</Link>
                 <Link to="/requests" onClick={() => setMenuOpen(false)}>Requests</Link>
                 <Link to="/dashboard" onClick={() => setMenuOpen(false)}>Dashboard</Link>
                 <Link to="/contact" onClick={() => setMenuOpen(false)}>Contact</Link>
