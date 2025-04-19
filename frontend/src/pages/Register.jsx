@@ -1,97 +1,144 @@
 // import React, { useState } from "react";
-// import { Link } from "react-router-dom";
-// import "./Register.css"; // Ensure this file exists
+// import { useNavigate, Link } from "react-router-dom";
+// import "./Register.css";
 
 // function Signup() {
-//   const [name, setName] = useState("");
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [confirmPassword, setConfirmPassword] = useState("");
+//   const navigate = useNavigate();
+//   const [formData, setFormData] = useState({
+//     name: "",
+//     email: "",
+//     password: "",
+//     confirmPassword: "",
+//     phone: ""
+//   });
 //   const [error, setError] = useState("");
+//   const [isSubmitting, setIsSubmitting] = useState(false);
 
-//   const handleSubmit = (e) => {
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData(prev => ({
+//       ...prev,
+//       [name]: value
+//     }));
+//   };
+
+//   const handleSubmit = async (e) => {
 //     e.preventDefault();
-    
-//     if (password !== confirmPassword) {
+
+//     if (formData.password !== formData.confirmPassword) {
 //       setError("Passwords do not match!");
 //       return;
 //     }
-    
-//     setError(""); // Clear error if passwords match
-//     console.log("Name:", name);
-//     console.log("Email:", email);
-//     console.log("Password:", password);
+
+//     try {
+//       setIsSubmitting(true);
+//       setError("");
+      
+//       const response = await fetch("http://localhost:5000/api/register", {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json"
+//         },
+//         body: JSON.stringify({
+//           name: formData.name,
+//           email: formData.email,
+//           password: formData.password,
+//           phone: formData.phone
+//         })
+//       });
+
+//       const data = await response.json();
+
+//       if (!response.ok) {
+//         throw new Error(data.error || "Registration failed");
+//       }
+
+//       // Store user data and token
+//       localStorage.setItem("token", data.access_token);
+//       localStorage.setItem("user", JSON.stringify(data.user));
+      
+//       navigate("/dashboard");
+//     } catch (err) {
+//       setError(err.message);
+//     } finally {
+//       setIsSubmitting(false);
+//     }
 //   };
 
 //   return (
 //     <div className="signup-container">
 //       <div className="signup-box">
-//         {/* Left Pane - Image */}
-       
-
-//         {/* Right Pane - Form */}
 //         <div className="signup-form">
 //           <h2 className="signup-title">Sign Up</h2>
+//           {error && <div className="error-message">{error}</div>}
           
 //           <form onSubmit={handleSubmit}>
-//             {/* Name Input */}
 //             <div className="input-group">
-//               <label>Name</label>
+//               <label>Full Name</label>
 //               <input
 //                 type="text"
-//                 placeholder="Enter your name"
-//                 value={name}
-//                 onChange={(e) => setName(e.target.value)}
+//                 name="name"
+//                 value={formData.name}
+//                 onChange={handleChange}
 //                 required
 //               />
 //             </div>
 
-//             {/* Email Input */}
 //             <div className="input-group">
 //               <label>Email</label>
 //               <input
 //                 type="email"
-//                 placeholder="Enter your email"
-//                 value={email}
-//                 onChange={(e) => setEmail(e.target.value)}
+//                 name="email"
+//                 value={formData.email}
+//                 onChange={handleChange}
 //                 required
 //               />
 //             </div>
 
-//             {/* Password Input */}
+//             <div className="input-group">
+//               <label>Phone Number</label>
+//               <input
+//                 type="tel"
+//                 name="phone"
+//                 value={formData.phone}
+//                 onChange={handleChange}
+//                 required
+//                 pattern="[0-9]{10}"
+//                 title="10 digit phone number"
+//               />
+//             </div>
+
 //             <div className="input-group">
 //               <label>Password</label>
 //               <input
 //                 type="password"
-//                 placeholder="Enter your password"
-//                 value={password}
-//                 onChange={(e) => setPassword(e.target.value)}
+//                 name="password"
+//                 value={formData.password}
+//                 onChange={handleChange}
 //                 required
+//                 minLength="6"
 //               />
 //             </div>
 
-//             {/* Confirm Password Input */}
 //             <div className="input-group">
 //               <label>Confirm Password</label>
 //               <input
 //                 type="password"
-//                 placeholder="Re-enter your password"
-//                 value={confirmPassword}
-//                 onChange={(e) => setConfirmPassword(e.target.value)}
+//                 name="confirmPassword"
+//                 value={formData.confirmPassword}
+//                 onChange={handleChange}
 //                 required
 //               />
 //             </div>
 
-//             {/* Error Message */}
-//             {error && <p className="error-message">{error}</p>}
+//             <button 
+//               type="submit" 
+//               className="signup-button"
+//               disabled={isSubmitting}
+//             >
+//               {isSubmitting ? "Registering..." : "Register"}
+//             </button>
 
-//             {/* Submit Button */}
-//             <a href="/dashboard">
-//   <button type="button" className="signup-button">Register</button>
-// </a>
-
-
-//             {/* Redirect to Login */}
 //             <p className="login-text">
 //               Already have an account? <Link to="/login">Login</Link>
 //             </p>
@@ -109,46 +156,70 @@ import "./Register.css";
 
 function Signup() {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    phone: ""
+  });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match!");
       return;
     }
 
     try {
       setIsSubmitting(true);
+      setError("");
+      
       const response = await fetch("http://localhost:5000/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          name,
-          email,
-          password,
-          confirmPassword
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone
         })
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Registration failed");
+        throw new Error(data.error || "Registration failed");
       }
 
-      console.log("✅ Registration success:", data);
-      navigate("/login");
+      // Set registration success flag
+      setRegistrationSuccess(true);
+      
+      // Show success message for 2 seconds before redirecting
+      setTimeout(() => {
+        navigate("/login", { 
+          state: { 
+            registrationSuccess: true,
+            email: formData.email 
+          } 
+        });
+      }, 2000);
+
     } catch (err) {
-      console.error("❌ Registration error:", err.message);
       setError(err.message);
     } finally {
       setIsSubmitting(false);
@@ -160,65 +231,88 @@ function Signup() {
       <div className="signup-box">
         <div className="signup-form">
           <h2 className="signup-title">Sign Up</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="input-group">
-              <label>Name</label>
-              <input
-                type="text"
-                placeholder="Enter your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
+          
+          {registrationSuccess ? (
+            <div className="success-message">
+              Registration successful! Redirecting to login...
             </div>
+          ) : (
+            <>
+              {error && <div className="error-message">{error}</div>}
+              
+              <form onSubmit={handleSubmit}>
+                <div className="input-group">
+                  <label>Full Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
 
-            <div className="input-group">
-              <label>Email</label>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+                <div className="input-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
 
-            <div className="input-group">
-              <label>Password</label>
-              <input
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+                <div className="input-group">
+                  <label>Phone Number</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                    pattern="[0-9]{10}"
+                    title="10 digit phone number"
+                  />
+                </div>
 
-            <div className="input-group">
-              <label>Confirm Password</label>
-              <input
-                type="password"
-                placeholder="Re-enter your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </div>
+                <div className="input-group">
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    minLength="6"
+                  />
+                </div>
 
-            {error && <p className="error-message">{error}</p>}
+                <div className="input-group">
+                  <label>Confirm Password</label>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
 
-            <button 
-              type="submit" 
-              className="signup-button"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Registering..." : "Register"}
-            </button>
+                <button 
+                  type="submit" 
+                  className="signup-button"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Registering..." : "Register"}
+                </button>
+              </form>
+            </>
+          )}
 
-            <p className="login-text">
-              Already have an account? <Link to="/login">Login</Link>
-            </p>
-          </form>
+          <p className="login-text">
+            Already have an account? <Link to="/login">Login</Link>
+          </p>
         </div>
       </div>
     </div>

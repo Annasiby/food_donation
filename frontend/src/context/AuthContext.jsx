@@ -57,9 +57,11 @@ export function AuthProvider({ children }) {
       try {
         const token = localStorage.getItem('token');
         if (token) {
-          // Add your token verification API call here
-          // const response = await fetch('/api/verify-token', { headers: { Authorization: `Bearer ${token}` } });
-          // if (!response.ok) throw new Error('Invalid token');
+          const response = await fetch('http://localhost:5000/api/verify-token', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (!response.ok) throw new Error('Invalid token');
+          // Optionally update user data
         }
       } catch (error) {
         logout();
@@ -72,20 +74,21 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-
+  
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
+        throw new Error(data.error || 'Login failed');
       }
-
+  
+      // Match backend response structure
       localStorage.setItem('user', JSON.stringify(data.user));
-      localStorage.setItem('token', data.token);
+      localStorage.setItem('token', data.access_token);  // Changed from data.token to data.access_token
       setUser(data.user);
       return { success: true };
     } catch (error) {
