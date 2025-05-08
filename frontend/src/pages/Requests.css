@@ -1,0 +1,176 @@
+/* 
+.requests-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.requests-container h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.hardcoded-requests {
+  margin-bottom: 30px;
+}
+
+.hardcoded-requests h3 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.hardcoded-requests ul {
+  list-style: none;
+  padding: 0;
+}
+
+.hardcoded-requests li {
+  font-size: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.available-donations {
+  margin-top: 20px;
+}
+
+.available-donations h3 {
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+
+.error-message {
+  color: #d32f2f;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.success-message {
+  color: #4CAF50;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.donation-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.donation-table th,
+.donation-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.donation-table th {
+  background-color: #4CAF50;
+  color: white;
+  font-weight: bold;
+}
+
+.donation-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.donation-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.request-button {
+  padding: 8px 16px;
+  font-size: 14px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.request-button:hover {
+  background-color: #45a049;
+}
+
+@media (max-width: 768px) {
+  .donation-table {
+    font-size: 14px;
+  }
+
+  .donation-table th,
+  .donation-table td {
+    padding: 8px;
+  }
+
+  .request-button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+} */
+.requests-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.donation-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.donation-table th,
+.donation-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.donation-table th {
+  background-color: #f2f2f2;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 10px;
+}
+
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.tab-button {
+  padding: 10px 20px;
+  margin-right: 5px;
+  border: none;
+  background-color: #f2f2f2;
+  cursor: pointer;
+  border-radius: 5px 5px 0 0;
+}
+
+.tab-button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.tab-button:hover {
+  background-color: #e0e0e0;
+}
+
+.request-button {
+  padding: 5px 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.request-button:hover {
+  background-color: #218838;
+}
