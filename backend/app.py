@@ -657,7 +657,44 @@ def create_donation():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'Server error', 'message': str(e)}), 500
+@app.route('/api/donations/<int:id>', methods=['GET'])
+@jwt_required()
+def get_donation(id):
+    current_user_id = get_jwt_identity()
+    donation = Donation.query.filter_by(id=id, user_id=current_user_id).first()
+    if not donation:
+        return jsonify({'error': 'Donation not found'}), 404
+    return jsonify({
+        'id': donation.id,
+        'food_item': donation.food_item,
+        'quantity': donation.quantity,
+        'location': donation.location,
+        'phone': donation.phone,
+        'expiry_date': donation.expiry_date.isoformat() if donation.expiry_date else None,
+        'description': donation.description,
+        'status': donation.status
+    })
 
+@app.route('/api/donations/<int:id>', methods=['PUT'])
+@jwt_required()
+def update_donation(id):
+    current_user_id = get_jwt_identity()
+    donation = Donation.query.filter_by(id=id, user_id=current_user_id).first()
+    if not donation:
+        return jsonify({'error': 'Donation not found'}), 404
+
+    data = request.get_json()
+    donation.food_item = data.get('food_item', donation.food_item)
+    donation.quantity = data.get('quantity', donation.quantity)
+    donation.location = data.get('location', donation.location)
+    donation.phone = data.get('phone', donation.phone)
+    donation.expiry_date = datetime.strptime(data['expiry_date'], '%Y-%m-%d').date() if data.get('expiry_date') else None
+    donation.description = data.get('description', donation.description)
+    donation.status = data.get('status', donation.status)
+
+    db.session.commit()
+    return jsonify({'message': 'Donation updated successfully'})
+    
 @app.route('/api/donations', methods=['GET'])
 @jwt_required()
 def get_donations():

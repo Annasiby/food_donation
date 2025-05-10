@@ -7,6 +7,7 @@
 //   const navigate = useNavigate();
 //   const [userName, setUserName] = useState('');
 //   const [donations, setDonations] = useState([]);
+//   const [requests, setRequests] = useState([]);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState('');
 //   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -25,32 +26,46 @@
 //     setIsAuthenticated(true);
 //     setUserName(userData.name);
 
-//     const fetchDonations = async () => {
+//     const fetchData = async () => {
 //       try {
-//         const response = await fetch('/api/donations', {
+//         // Fetch donations
+//         const donationResponse = await fetch('/api/donations', {
 //           method: 'GET',
 //           headers: {
 //             'Content-Type': 'application/json',
 //             Authorization: `Bearer ${token}`,
 //           },
 //         });
-
-//         if (!response.ok) {
-//           const errorData = await response.json();
+//         if (!donationResponse.ok) {
+//           const errorData = await donationResponse.json();
 //           throw new Error(errorData.error || 'Failed to fetch donations');
 //         }
+//         const donationData = await donationResponse.json();
+//         setDonations(donationData);
 
-//         const data = await response.json();
-//         setDonations(data);
+//         // Fetch requests for my donations
+//         const requestResponse = await fetch('/api/requests/my-donations', {
+//           method: 'GET',
+//           headers: {
+//             'Content-Type': 'application/json',
+//             Authorization: `Bearer ${token}`,
+//           },
+//         });
+//         if (!requestResponse.ok) {
+//           const errorData = await requestResponse.json();
+//           throw new Error(errorData.error || 'Failed to fetch requests');
+//         }
+//         const requestData = await requestResponse.json();
+//         setRequests(requestData);
 //       } catch (err) {
-//         console.error('Fetch donations error:', err);
-//         setError(err.message || 'Failed to load donations. Please check your connection or try again later.');
+//         console.error('Fetch data error:', err);
+//         setError(err.message || 'Failed to load data. Please check your connection or try again later.');
 //       } finally {
 //         setLoading(false);
 //       }
 //     };
 
-//     fetchDonations();
+//     fetchData();
 //   }, [navigate]);
 
 //   const goToDonation = () => navigate('/donation');
@@ -73,21 +88,16 @@
 //             Authorization: `Bearer ${token}`,
 //           },
 //         });
-
 //         if (!response.ok) {
 //           const errorData = await response.json();
 //           throw new Error(errorData.error || 'Failed to delete donation');
 //         }
-
 //         setDonations(donations.filter((donation) => donation.id !== donationId));
-//         setError(''); // Clear any previous errors on success
+//         setRequests(requests.filter((req) => req.donation_id !== donationId));
+//         setError('');
 //       } catch (err) {
 //         console.error('Delete donation error:', err);
-//         if (err.message.includes('Failed to fetch')) {
-//           setError('Unable to delete donation due to a network issue. Please check your server or try again later.');
-//         } else {
-//           setError(err.message || 'Failed to delete donation. Please try again later.');
-//         }
+//         setError(err.message || 'Failed to delete donation. Please try again later.');
 //       }
 //     }
 //   };
@@ -122,8 +132,8 @@
 //           <p>{donations.length}</p>
 //         </div>
 //         <div className="stat-card">
-//           <h3>Requests</h3>
-//           <p>5</p> {/* Update with actual requests data if available */}
+//           <h3>Requests Received</h3>
+//           <p>{requests.length}</p>
 //         </div>
 //       </div>
 
@@ -159,19 +169,43 @@
 //                   <td>{donation.description || 'N/A'}</td>
 //                   <td>{donation.status}</td>
 //                   <td>
-//                     <button
-//                       className="edit-button"
-//                       onClick={() => handleEdit(donation.id)}
-//                     >
-//                       Edit
-//                     </button>
-//                     <button
-//                       className="delete-button"
-//                       onClick={() => handleDelete(donation.id)}
-//                     >
-//                       Delete
-//                     </button>
+//                     <button className="edit-button" onClick={() => handleEdit(donation.id)}>Edit</button>
+//                     <button className="delete-button" onClick={() => handleDelete(donation.id)}>Delete</button>
 //                   </td>
+//                 </tr>
+//               ))}
+//             </tbody>
+//           </table>
+//         )}
+//       </div>
+
+//       <div className="requests-table">
+//         <h3>Requests for Your Donations</h3>
+//         {loading ? (
+//           <p>Loading requests...</p>
+//         ) : requests.length === 0 ? (
+//           <p>No requests received for your donations.</p>
+//         ) : (
+//           <table className="donation-table">
+//             <thead>
+//               <tr>
+//                 <th>Food Item</th>
+//                 <th>Quantity</th>
+//                 <th>Location</th>
+//                 <th>Requester Name</th>
+//                 <th>Requester Phone</th>
+//                 <th>Request Date</th>
+//               </tr>
+//             </thead>
+//             <tbody>
+//               {requests.map((req) => (
+//                 <tr key={req.request_id}>
+//                   <td>{req.food_item}</td>
+//                   <td>{req.quantity}</td>
+//                   <td>{req.location}</td>
+//                   <td>{req.requester_name}</td>
+//                   <td>{req.requester_phone}</td>
+//                   <td>{new Date(req.created_at).toLocaleDateString()}</td>
 //                 </tr>
 //               ))}
 //             </tbody>
@@ -184,17 +218,58 @@
 
 // export default Dashboard;
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Dashboard.css';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // Add to detect navigation
   const [userName, setUserName] = useState('');
   const [donations, setDonations] = useState([]);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const fetchData = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      // Fetch donations
+      const donationResponse = await fetch('/api/donations', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!donationResponse.ok) {
+        const errorData = await donationResponse.json();
+        throw new Error(errorData.error || 'Failed to fetch donations');
+      }
+      const donationData = await donationResponse.json();
+      setDonations(donationData);
+
+      // Fetch requests for my donations
+      const requestResponse = await fetch('/api/requests/my-donations', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!requestResponse.ok) {
+        const errorData = await requestResponse.json();
+        throw new Error(errorData.error || 'Failed to fetch requests');
+      }
+      const requestData = await requestResponse.json();
+      setRequests(requestData);
+    } catch (err) {
+      console.error('Fetch data error:', err);
+      setError(err.message || 'Failed to load data. Please check your connection or try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user'));
@@ -209,48 +284,8 @@ const Dashboard = () => {
 
     setIsAuthenticated(true);
     setUserName(userData.name);
-
-    const fetchData = async () => {
-      try {
-        // Fetch donations
-        const donationResponse = await fetch('/api/donations', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!donationResponse.ok) {
-          const errorData = await donationResponse.json();
-          throw new Error(errorData.error || 'Failed to fetch donations');
-        }
-        const donationData = await donationResponse.json();
-        setDonations(donationData);
-
-        // Fetch requests for my donations
-        const requestResponse = await fetch('/api/requests/my-donations', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!requestResponse.ok) {
-          const errorData = await requestResponse.json();
-          throw new Error(errorData.error || 'Failed to fetch requests');
-        }
-        const requestData = await requestResponse.json();
-        setRequests(requestData);
-      } catch (err) {
-        console.error('Fetch data error:', err);
-        setError(err.message || 'Failed to load data. Please check your connection or try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
-  }, [navigate]);
+  }, [navigate, location]); // Add location to refetch on navigation
 
   const goToDonation = () => navigate('/donation');
   const goToRequests = () => navigate('/requests');

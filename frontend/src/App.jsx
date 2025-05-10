@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import Contact from './pages/Contact';
 import Navbar from './components/navbar';
 import Footer from './components/footer';
+import EditDonation from './pages/EditDonation.jsx';
 import './App.css';  
 
 const App = () => {
@@ -27,6 +28,7 @@ const App = () => {
                     <Route path="/requests" element={<Requests />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/contact" element={<Contact />} />
+                    <Route path="/edit-donation/:id" element={<EditDonation />} />
                 </Routes>
             </div>
             <Footer />
